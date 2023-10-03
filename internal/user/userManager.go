@@ -18,6 +18,7 @@ func InitUser() {
 	USER_DATA = os.Getenv("USER_DATA")
 
 	if _, err := os.Stat(USER_DATA); err != nil {
+		os.Create(USER_DATA)
 		return
 	}
 
@@ -41,7 +42,12 @@ func InitUser() {
 func SaveUser() {
 	fmt.Println("[UserManager] 保存")
 	userWriter := UserWriter.New()
-	userWriter.OpenFile(USER_DATA, os.O_CREATE, 0666)
+	err := userWriter.OpenFile(USER_DATA, os.O_CREATE, 0666)
+
+	if err != nil {
+		return
+	}
+
 	for _, user := range userIdMap {
 		userWriter.WriteUser(user)
 		fmt.Printf("[UserManager] 保存使用者 %s\n", user)

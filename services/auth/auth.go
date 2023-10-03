@@ -14,7 +14,7 @@ var secret []byte
 
 func Init() {
 	secret = []byte(os.Getenv("SECRET"))
-	fmt.Printf("secret: %v\n", secret)
+	fmt.Printf("secret: %s\n", secret)
 }
 
 func GenerateToken(account, password string) ([]byte, error) {

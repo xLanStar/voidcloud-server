@@ -122,11 +122,13 @@ func (folder *Folder) FindFolder(name ...string) (*Folder, error) {
 func newFolder(name string) *Folder {
 	fmt.Println("newFolder:", name)
 	folder := &Folder{
-		Id:         generateFolderId(),
-		Name:       name,
-		Files:      make([]string, 0),
-		SubFolders: make([]*Folder, 0),
-		ShareUsers: make([]string, 0),
+		Id:               generateFolderId(),
+		Name:             name,
+		Files:            make([]string, 0),
+		SubFolders:       make([]*Folder, 0),
+		ShareUsers:       make([]string, 0),
+		PublicPermission: NO_PERMISSION,
+		SharePermission:  NO_PERMISSION,
 	}
 	folderIdMap[folder.Id] = folder
 	return folder
