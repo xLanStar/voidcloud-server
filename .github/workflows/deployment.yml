@@ -1,0 +1,54 @@
+name: Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - dev
+    paths:
+      - 'src/**/*'
+  pull_request:
+    branches:
+      - master
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    env:
+      AWS_S3_BUCKET_NAME: ainsight.ai # TODO: Change to production S3 bucket name
+      AWS_CLOUDFRONT_DISTRIBUTION_ID: E2G02XP5WQDEY3 # TODO: Change to production Cloudfront distribution ID
+      AWS_REGION: ap-northeast-1 # TODO: Change to production AWS region
+      AWS_ACCESS_KEY_ID: ${{ github.ref_name == 'master' && secrets.PRODUCTION_AWS_ACCESS_KEY_ID || secrets.DEVELOPMENT_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ github.ref_name == 'master' && secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY || secrets.DEVELOPMENT_AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      # 打包
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run:  |
+          if [ ${{ github.ref_name }} == 'master' ]; then
+            npm run build
+          else
+            npm run build:dev
+          fi
+
+      # 部署到 S3 Bucket
+      - name: S3 Sync
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          SOURCE_DIR: 'dist'
+
+      # Cloudfront 更新
+      # - run: aws cloudfront create-invalidation --distribution-id "${{env.AWS_CLOUDFRONT_DISTRIBUTION_ID}}" --paths "/index.html"
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
