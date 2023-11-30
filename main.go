@@ -43,8 +43,12 @@ func main() {
 	// user.CreateUser("Lanstar3", "Lanstar3", "danny95624268@gmail.com", "aa95624268")
 
 	// 啟用 File Webdav 服務
-	go server.ListenAndServe(":"+os.Getenv("STORAGE_PORT"), storageRouter)
-	go server.ListenAndServeTLS(":"+os.Getenv("STORAGE_PORT_TLS"), "./certs/cert.crt", "./certs/key.pem", storageRouter)
+	if os.Getenv("HTTP_ENABLE") == "true" {
+		go server.ListenAndServe(":"+os.Getenv("STORAGE_PORT"), storageRouter)
+	}
+	if os.Getenv("HTTPS_ENABLE") == "true" {
+		go server.ListenAndServeTLS(":"+os.Getenv("STORAGE_PORT_TLS"), "./certs/cert.crt", "./certs/key.pem", storageRouter)
+	}
 
 	// WEBDAV
 	// http.ListenAndServe(":8080", &webdav.Handler{
