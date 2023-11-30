@@ -1,5 +1,11 @@
 # VoidCloud-Server
 
+## How to connect to web drive
+
+### Windows
+
+`net use Z: https://<host>/ <password> /User:<username>`
+
 ---
 
 ## storage.bin 格式
