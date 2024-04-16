@@ -1,7 +1,7 @@
 package storage
 
 import (
-	fastio "github.com/xLanStar/go-fast-io"
+	fastio "github.com/xLanStar/go-fast-io/v2"
 )
 
 type folderWriter struct {

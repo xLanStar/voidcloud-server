@@ -7,13 +7,13 @@ import (
 )
 
 type userReader struct {
-	*fastio.FileReader
+	fastio.FileReader
 }
 
 var UserReader userReader
 
 func (userReader) New() userReader {
-	userReader := userReader{&fastio.FileReader{}}
+	userReader := userReader{fastio.FileReader{}}
 	userReader.Init()
 	return userReader
 }

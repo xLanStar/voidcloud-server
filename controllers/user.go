@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"voidcloud-server/internal/exception"
 	"voidcloud-server/internal/user"
@@ -54,6 +55,8 @@ func Login(c *gin.Context) {
 
 	// 檢查帳號密碼是否有誤
 	user := user.GetUserByAccount(data.Account)
+
+	log.Println(user)
 
 	if user == nil || data.Password != user.Password {
 		c.Status(http.StatusUnauthorized)

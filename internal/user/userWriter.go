@@ -5,13 +5,13 @@ import (
 )
 
 type userWriter struct {
-	*fastio.FileWriter
+	fastio.FileWriter
 }
 
 var UserWriter userWriter
 
 func (userWriter) New() userWriter {
-	userWriter := userWriter{&fastio.FileWriter{}}
+	userWriter := userWriter{fastio.FileWriter{}}
 	userWriter.Init()
 	return userWriter
 }

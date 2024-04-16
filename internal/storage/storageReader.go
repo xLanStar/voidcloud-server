@@ -3,17 +3,17 @@ package storage
 import (
 	"fmt"
 
-	fastio "github.com/xLanStar/go-fast-io"
+	fastio "github.com/xLanStar/go-fast-io/v2"
 )
 
 type folderReader struct {
-	*fastio.FileReader
+	fastio.FileReader
 }
 
 var FolderReader folderReader
 
 func (folderReader) New() folderReader {
-	folderReader := folderReader{&fastio.FileReader{}}
+	folderReader := folderReader{fastio.FileReader{}}
 	folderReader.Init()
 	return folderReader
 }

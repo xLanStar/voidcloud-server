@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"mime"
 	"os"
 	"os/signal"
 	"voidcloud-server/internal/router"
@@ -15,13 +14,11 @@ import (
 )
 
 var (
+	webRouter     *router.WebRouter
 	storageRouter *router.StorageRouter
 )
 
 func init() {
-	mime.AddExtensionType(".js", "text/javascript; charset=utf-8")
-	mime.AddExtensionType(".css", "text/css; charset=utf-8")
-
 	// 設定為正式版
 	// gin.SetMode(gin.ReleaseMode)
 
@@ -30,6 +27,7 @@ func init() {
 	user.InitUser()
 
 	// 建立路由
+	webRouter = router.NewWebRouter()
 	storageRouter = router.NewStorageRouter(os.Getenv("STORAGE_FOLDER"), os.Getenv("STORAGE_PREFIX"))
 }
 
@@ -40,14 +38,17 @@ func main() {
 	// DEBUG:
 	// user.GetUserByAccount("ofei0305").RootFolder = storage.CreateRootFolder("歐菲系統廚具")
 	// user.CreateUser("歐菲系統廚具", "ofei0305", "ofei0305@gmail.com", "48EmfQkusyMyC3Ur")
-	// user.CreateUser("Lanstar3", "Lanstar3", "danny95624268@gmail.com", "aa95624268")
+	// user.CreateUser("Lanstar", "Lanstar", "danny95624268@gmail.com", "aa95624268")
 
+	// 啟用 Web HTTP 服務
 	// 啟用 File Webdav 服務
 	if os.Getenv("HTTP_ENABLE") == "true" {
 		go server.ListenAndServe(":"+os.Getenv("STORAGE_PORT"), storageRouter)
+		go server.ListenAndServe(":"+os.Getenv("WEB_PORT"), webRouter)
 	}
 	if os.Getenv("HTTPS_ENABLE") == "true" {
 		go server.ListenAndServeTLS(":"+os.Getenv("STORAGE_PORT_TLS"), "./certs/cert.crt", "./certs/key.pem", storageRouter)
+		go server.ListenAndServeTLS(":"+os.Getenv("WEB_PORT_TLS"), "./certs/cert.crt", "./certs/key.pem", webRouter)
 	}
 
 	// WEBDAV
